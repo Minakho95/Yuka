@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import {
   Text,
@@ -12,9 +14,11 @@ import {
   StyleSheet,
 } from "react-native";
 
-export default function CameraScreen({ setDataBarCode }) {
+export default function CameraScreen({ setProductStorage, productStorage }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [productData, setProductData] = useState();
+  const [barCodeScanned, setbarCodeScanned] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -23,9 +27,43 @@ export default function CameraScreen({ setDataBarCode }) {
     })();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://fr.openfoodfacts.org/api/v0/product/${barCodeScanned}.json`
+        );
+
+        if (response.data.code) {
+          // getting product data
+          setProductData(response.data.product);
+
+          // storing data in AsyncStorage (setProductStorage)
+          let newProduct;
+          if (
+            productStorage &&
+            productStorage.indexOf(barCodeScanned) === -1 &&
+            productStorage.length > 0
+          ) {
+            newProduct = [...productStorage];
+          } else {
+            newProduct = [];
+          }
+          newProduct.push(barCodeScanned);
+          await AsyncStorage.setItem("products", JSON.stringify(newProduct));
+          setProductStorage(newProduct);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [barCodeScanned, scanned]);
+
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    setDataBarCode(data);
+    setbarCodeScanned(data);
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
 

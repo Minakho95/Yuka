@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { NavigationContainer } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import {
@@ -28,7 +29,16 @@ const Stack = createStackNavigator();
 const Tab = createMaterialTopTabNavigator();
 
 export default function App() {
-  const [dataBarCode, setDataBarCode] = useState("");
+  const [productStorage, setProductStorage] = useState([]);
+
+  useEffect(() => {
+    const dataAsync = async () => {
+      const stored = await AsyncStorage.getItem("products");
+      setProductStorage(JSON.parse(stored));
+    };
+
+    dataAsync();
+  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -64,7 +74,8 @@ export default function App() {
                         {(props) => (
                           <ProductListScreen
                             {...props}
-                            dataBarCode={dataBarCode}
+                            productStorage={productStorage}
+                            setProductStorage={setProductStorage}
                           />
                         )}
                       </Stack.Screen>
@@ -74,18 +85,6 @@ export default function App() {
                         options={{ headerShown: false, title: "Product" }}
                       >
                         {(props) => <ProductScreen {...props} />}
-                      </Stack.Screen>
-                      {/* CAMERA SCREEN */}
-                      <Stack.Screen
-                        name="Camera"
-                        options={{ headerShown: false }}
-                      >
-                        {(props) => (
-                          <CameraScreen
-                            {...props}
-                            setDataBarCode={setDataBarCode}
-                          />
-                        )}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}
@@ -110,6 +109,16 @@ export default function App() {
               {/* SCAN BUTTON */}
               <ScanButton />
             </>
+          )}
+        </Stack.Screen>
+        {/* CAMERA SCREEN */}
+        <Stack.Screen name="Camera" options={{ headerShown: false }}>
+          {(props) => (
+            <CameraScreen
+              {...props}
+              setProductStorage={setProductStorage}
+              productStorage={productStorage}
+            />
           )}
         </Stack.Screen>
       </Stack.Navigator>
