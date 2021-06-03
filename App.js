@@ -79,13 +79,6 @@ export default function App() {
                           />
                         )}
                       </Stack.Screen>
-                      {/* PRODUIT SCREEN */}
-                      <Stack.Screen
-                        name="Product"
-                        options={{ headerShown: false, title: "Product" }}
-                      >
-                        {(props) => <ProductScreen {...props} />}
-                      </Stack.Screen>
                     </Stack.Navigator>
                   )}
                 </Tab.Screen>
@@ -120,6 +113,13 @@ export default function App() {
               productStorage={productStorage}
             />
           )}
+        </Stack.Screen>
+        {/* PRODUIT SCREEN */}
+        <Stack.Screen
+          name="Product"
+          options={{ headerShown: false, title: "Product" }}
+        >
+          {(props) => <ProductScreen {...props} />}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

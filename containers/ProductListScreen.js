@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
-import { BarCodeScanner } from "expo-barcode-scanner";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome } from "@expo/vector-icons";
 import {
@@ -16,6 +14,7 @@ import {
   ImageBackground,
   SafeAreaView,
   ScrollView,
+  StatusBar,
 } from "react-native";
 
 // HomeScreen reçoit la props navigation
@@ -43,6 +42,7 @@ export default function ProducListScreen({
         setIsNotEmpty(false);
       }
       setData(newTab);
+      setIsloading(false);
     };
     fetchData();
   }, [productStorage]);
@@ -52,8 +52,11 @@ export default function ProducListScreen({
     setProductStorage([]);
     await AsyncStorage.removeItem("products");
   };
-  return (
+  return isLoading ? (
+    <ActivityIndicator size="large" color="green" />
+  ) : (
     <SafeAreaView>
+      <StatusBar backgroundColor="green" />
       {isNotEmpty ? (
         <FlatList
           data={data}
@@ -89,7 +92,9 @@ export default function ProducListScreen({
               <TouchableOpacity
                 style={styles.container}
                 onPress={() => {
-                  navigation.navigate("Product");
+                  navigation.navigate("Product", {
+                    productCode: item.code,
+                  });
                 }}
               >
                 <View style={styles.list}>

@@ -93,5 +93,6 @@ export default function CameraScreen({ setProductStorage, productStorage }) {
         <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
       )}
     </View>
+    // MODAL POP UP
   );
 }
