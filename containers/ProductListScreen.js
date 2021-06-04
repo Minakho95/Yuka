@@ -2,19 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome } from "@expo/vector-icons";
+import Product from "../components/Product";
 import {
   ActivityIndicator,
-  Button,
   Text,
-  View,
   FlatList,
-  StyleSheet,
   TouchableOpacity,
-  Image,
-  ImageBackground,
   SafeAreaView,
-  ScrollView,
   StatusBar,
+  StyleSheet,
 } from "react-native";
 
 // HomeScreen reçoit la props navigation
@@ -57,37 +53,18 @@ export default function ProducListScreen({
   ) : (
     <SafeAreaView>
       <StatusBar backgroundColor="green" />
+      <TouchableOpacity
+        onPress={() => {
+          handleDelete();
+        }}
+      >
+        <Text>Tout retirer</Text>
+      </TouchableOpacity>
       {isNotEmpty ? (
         <FlatList
           data={data}
           keyExtractor={(item) => String(item.code)}
           renderItem={({ item }) => {
-            const handleScore = () => {
-              const score = item.product.nutriscore_grade;
-              let scoreColor;
-              let scoreText;
-              if (score === "a") {
-                scoreText = "Excellent";
-                scoreColor = "#028141";
-              } else if (score === "b") {
-                scoreText = "Bon";
-                scoreColor = "#85BB2F";
-              } else if (score === "c") {
-                scoreText = "Moyen";
-                scoreColor = "#FECB03";
-              } else if (score === "d") {
-                scoreText = "Mauvais";
-                scoreColor = "#EE8100";
-              } else if (score === "e") {
-                scoreText = "Très mauvais";
-                scoreColor = "#E63D11";
-              } else if (score === null) {
-                scoreText = "Pas de note";
-                scoreColor = "grey";
-              }
-              return { scoreColor: scoreColor, scoreText: scoreText };
-            };
-            const { scoreColor, scoreText } = handleScore();
             return (
               <TouchableOpacity
                 style={styles.container}
@@ -97,26 +74,7 @@ export default function ProducListScreen({
                   });
                 }}
               >
-                <View style={styles.list}>
-                  <Image
-                    style={styles.listImg}
-                    source={{ uri: item.product.image_url }}
-                  ></Image>
-                  <View style={styles.listText}>
-                    <Text style={styles.productName}>
-                      {item.product.product_name}
-                    </Text>
-                    <Text>{item.product.brands}</Text>
-                    <View style={styles.productRating}>
-                      <FontAwesome
-                        name="circle"
-                        size={18}
-                        style={{ color: scoreColor }}
-                      />
-                      <Text style={styles.textRating}>{scoreText}</Text>
-                    </View>
-                  </View>
-                </View>
+                <Product productData={item.product} navigation={navigation} />
               </TouchableOpacity>
             );
           }}
@@ -124,51 +82,12 @@ export default function ProducListScreen({
       ) : (
         <Text>Scannez un produit</Text>
       )}
-      <TouchableOpacity
-        style={{ height: 44 }}
-        onPress={() => {
-          handleDelete();
-        }}
-      >
-        <Text>Delete products</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 1,
     borderBottomColor: "grey",
-  },
-  barcode: {
-    position: "absolute",
-    backgroundColor: "green",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 60,
-    height: 60,
-    right: 0,
-    top: 100,
-    borderRadius: 50,
-  },
-  listImg: {
-    width: 100,
-    height: 100,
-    resizeMode: "contain",
-  },
-  list: {
-    flexDirection: "row",
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  productName: {
-    fontWeight: "bold",
-  },
-  productRating: {
-    flexDirection: "row",
-  },
-  textRating: {
-    marginLeft: 5,
   },
 });

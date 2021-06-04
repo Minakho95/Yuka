@@ -1,22 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { BarCodeScanner } from "expo-barcode-scanner";
 import { NavigationContainer } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import {
-  Text,
-  View,
-  Button,
-  TouchableOpacity,
-  TouchableHighlight,
-  ScrollView,
-  SafeAreaView,
-  Platform,
-  StyleSheet,
-} from "react-native";
-import Constants from "expo-constants";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Platform, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import ProductListScreen from "./containers/ProductListScreen";
@@ -30,11 +17,14 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function App() {
   const [productStorage, setProductStorage] = useState([]);
+  const [favoriteStorage, setFavoriteStorage] = useState([]);
 
   useEffect(() => {
     const dataAsync = async () => {
       const stored = await AsyncStorage.getItem("products");
+      const storedFav = await AsyncStorage.getItem("favorites");
       setProductStorage(JSON.parse(stored));
+      setFavoriteStorage(JSON.parse(storedFav));
     };
 
     dataAsync();
@@ -52,18 +42,33 @@ export default function App() {
             <>
               <Tab.Navigator
                 style={styles.tab}
+                screenOptions={({ route }) => ({
+                  tabBarIcon: ({ focused }) => {
+                    let iconName;
+
+                    if (route.name === "ProductList") {
+                      iconName = focused ? "fast-food" : "fast-food-outline";
+                    } else if (route.name === "Favorite") {
+                      iconName = focused ? "star" : "star-outline";
+                    }
+
+                    // You can return any component that you like here!
+                    return <Ionicons name={iconName} size={22} color="white" />;
+                  },
+                })}
                 tabBarOptions={{
-                  activeTintColor: "green",
-                  inactiveTintColor: "gray",
+                  showLabel: false,
+                  showIcon: true,
+                  style: { backgroundColor: "#5dcc71" },
+                  indicatorStyle: {
+                    backgroundColor: "white",
+                  },
+                  activeTintColor: "white",
+                  inactiveTintColor: "white",
                 }}
               >
                 {/* PRODUCT LIST */}
-                <Tab.Screen
-                  name="ProductList"
-                  options={{
-                    tabBarLabel: "ProductList",
-                  }}
-                >
+                <Tab.Screen name="ProductList">
                   {() => (
                     <Stack.Navigator>
                       {/* PRODUCT LISTS SCREEN */}
@@ -83,20 +88,14 @@ export default function App() {
                   )}
                 </Tab.Screen>
                 {/* FAVORITE */}
-                <Tab.Screen
-                  name="Favorite"
-                  options={{
-                    tabBarLabel: "Favorite",
-                    tabBarIcon: ({ color, size }) => (
-                      <Ionicons
-                        name={"ios-options"}
-                        size={size}
-                        color={color}
-                      />
-                    ),
-                  }}
-                >
-                  {() => <FavoritesScreen />}
+                <Tab.Screen name="Favorite">
+                  {(props) => (
+                    <FavoritesScreen
+                      {...props}
+                      favoriteStorage={favoriteStorage}
+                      setFavoriteStorage={setFavoriteStorage}
+                    />
+                  )}
                 </Tab.Screen>
               </Tab.Navigator>
               {/* SCAN BUTTON */}
@@ -119,7 +118,13 @@ export default function App() {
           name="Product"
           options={{ headerShown: false, title: "Product" }}
         >
-          {(props) => <ProductScreen {...props} />}
+          {(props) => (
+            <ProductScreen
+              {...props}
+              setFavoriteStorage={setFavoriteStorage}
+              favoriteStorage={favoriteStorage}
+            />
+          )}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
@@ -133,6 +138,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   tab: {
-    marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 50,
+    marginTop: Platform.OS === "android" ? 0 : 50,
   },
 });

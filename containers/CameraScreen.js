@@ -46,6 +46,8 @@ export default function CameraScreen({ setProductStorage, productStorage }) {
             productStorage.length > 0
           ) {
             newProduct = [...productStorage];
+          } else if (productStorage.includes(barCodeScanned)) {
+            alert("Ce produit est déjà dans la liste");
           } else {
             newProduct = [];
           }

@@ -13,8 +13,13 @@ import {
   ScrollView,
   StatusBar,
 } from "react-native";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import CircleColor from "./CircleColor";
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function InfoProduct({ productData }) {
+  const handleScore = () => {};
   return (
     <>
       <View style={styles.container}>
@@ -32,55 +37,117 @@ export default function InfoProduct({ productData }) {
             {productData.nutriscore_data.proteins >= 8 && (
               <View style={styles.infoLine}>
                 <View style={styles.infoLineLeft}>
-                  <Text>Protéines</Text>
+                  <FontAwesome5 name="fish" size={24} color="grey" />
+                  <Text style={styles.textLeft}>Protéines</Text>
                 </View>
-                <Text>{productData.nutriments.proteins_100g}g</Text>
+                <View style={styles.infoRight}>
+                  <Text>{productData.nutriments.proteins_100g} g</Text>
+                  <CircleColor
+                    rate={productData.nutriscore_data.proteins_points}
+                    elem="Protéines"
+                  />
+                </View>
               </View>
             )}
             {productData.nutriscore_data.fiber >= 3.5 && (
               <View style={styles.infoLine}>
                 <View style={styles.infoLineLeft}>
-                  <Text>Fibres</Text>
+                  <MaterialCommunityIcons name="corn" size={24} color="grey" />
+                  <Text style={styles.textLeft}>Fibres</Text>
                 </View>
-                <Text>{productData.nutriments.fiber_100g}g</Text>
+                <View style={styles.infoRight}>
+                  <Text>{productData.nutriments.fiber_100g} g</Text>
+                  <CircleColor
+                    rate={productData.nutriscore_data.fiber_points}
+                    elem="Fibres"
+                  />
+                </View>
               </View>
             )}
             {productData.nutriscore_data.energy_points <= 2 && (
               <View style={styles.infoLine}>
                 <View style={styles.infoLineLeft}>
-                  <Text>Calories</Text>
+                  <FontAwesome5 name="burn" size={24} color="grey" />
+                  <Text style={styles.textLeft}>Calories</Text>
                 </View>
-                <Text>{productData.nutriments["energy-kcal_100g"]}g</Text>
+                {productData.nutriments["energy-kcal_100g"] ? (
+                  <View style={styles.infoRight}>
+                    <Text style={styles.textLeft}>
+                      {productData.nutriments["energy-kcal_100g"]} kcal
+                    </Text>
+                    <CircleColor
+                      rate={productData.nutriscore_data.energy_points}
+                      elem="Calories"
+                    />
+                  </View>
+                ) : (
+                  <Text>0 kcal</Text>
+                )}
               </View>
             )}
             {productData.nutriscore_data.sugars_points <= 2 && (
               <View style={styles.infoLine}>
                 <View style={styles.infoLineLeft}>
-                  <Text>Sucre</Text>
+                  <MaterialCommunityIcons
+                    name="spoon-sugar"
+                    size={24}
+                    color="grey"
+                  />
+                  <Text style={styles.textLeft}>Sucre</Text>
                 </View>
-                <Text>{productData.nutriments.sugars_100g}g</Text>
+                <View style={styles.infoRight}>
+                  <Text>{productData.nutriscore_data.sugars_value} g</Text>
+                  <CircleColor
+                    rate={productData.nutriscore_data.sugars_points}
+                    elem="Sucre"
+                  />
+                </View>
               </View>
             )}
             {productData.nutriscore_data.saturated_fat_points <= 2 && (
               <View style={styles.infoLine}>
                 <View style={styles.infoLineLeft}>
-                  <Text>Graisses saturées</Text>
+                  <Ionicons name="water-sharp" size={24} color="grey" />
+                  <Text style={styles.textLeft}>Graisses saturées</Text>
                 </View>
-                <Text>{productData.nutriscore_data.saturated_fat}g</Text>
+                <View style={styles.infoRight}>
+                  <Text>
+                    {productData.nutriscore_data.saturated_fat_value} g
+                  </Text>
+                  <CircleColor
+                    rate={productData.nutriscore_data.saturated_fat_points}
+                    elem="Graisses"
+                  />
+                </View>
               </View>
             )}
-            {productData.nutriscore_data.sodium_points <= 2 && (
-              <View style={styles.infoLine}>
-                <View style={styles.infoLineLeft}>
-                  <Text>Sel</Text>
+            {productData.nutriscore_data.is_beverage ? (
+              <View></View>
+            ) : (
+              productData.nutriscore_data.sodium_points <= 2 && (
+                <View style={styles.infoLine}>
+                  <View style={styles.infoLineLeft}>
+                    <MaterialCommunityIcons
+                      name="food-variant"
+                      size={24}
+                      color="grey"
+                    />
+                    <Text style={styles.textLeft}>Sel</Text>
+                  </View>
+                  <View style={styles.infoRight}>
+                    <Text>{productData.nutriments.salt_100g} g</Text>
+                    <CircleColor
+                      rate={productData.nutriscore_data.sodium_points}
+                      elem="Sel"
+                    />
+                  </View>
                 </View>
-                <Text>{productData.nutriments.salt_100g}g</Text>
-              </View>
+              )
             )}
           </View>
         </View>
       </View>
-
+      {/* DEFAUTS ********************************************************************/}
       <View style={styles.defaults}>
         <View style={styles.container}>
           <View style={styles.infoTitle}>
@@ -99,9 +166,17 @@ export default function InfoProduct({ productData }) {
               productData.nutriscore_data.proteins < 8 && (
                 <View style={styles.infoLine}>
                   <View style={styles.infoLineLeft}>
-                    <Text>Protéines</Text>
+                    <FontAwesome5 name="fish" size={24} color="grey" />
+                    <Text style={styles.textLeft}>Protéines</Text>
                   </View>
-                  <Text>{productData.nutriments.proteins_100g}g</Text>
+                  <View style={styles.infoRight}>
+                    <Text>{productData.nutriments.proteins_100g} g</Text>
+                    <FontAwesome
+                      name="circle"
+                      size={18}
+                      style={{ color: "red", marginLeft: 5 }}
+                    />
+                  </View>
                 </View>
               )
             )}
@@ -111,43 +186,103 @@ export default function InfoProduct({ productData }) {
               productData.nutriscore_data.fiber < 3.5 && (
                 <View style={styles.infoLine}>
                   <View style={styles.infoLineLeft}>
-                    <Text>Fibres</Text>
+                    <MaterialCommunityIcons
+                      name="corn"
+                      size={24}
+                      color="grey"
+                    />
+                    <Text style={styles.textLeft}>Fibres</Text>
                   </View>
-                  <Text>{productData.nutriscore_data.fiber}g</Text>
+                  <View style={styles.infoRight}>
+                    <Text>{productData.nutriments.fiber_100g} g</Text>
+                    <FontAwesome
+                      name="circle"
+                      size={18}
+                      style={{ color: "red", marginLeft: 5 }}
+                    />
+                  </View>
                 </View>
               )
             )}
             {productData.nutriscore_data.energy_points > 2 && (
               <View style={styles.infoLine}>
                 <View style={styles.infoLineLeft}>
-                  <Text>Calories</Text>
+                  <FontAwesome5 name="burn" size={24} color="grey" />
+                  <Text style={styles.textLeft}>Calories</Text>
                 </View>
-                <Text>{productData.nutriments["energy-kcal_100g"]}g</Text>
+                <View style={styles.infoRight}>
+                  <Text style={styles.textLeft}>
+                    {productData.nutriments["energy-kcal_100g"]} kcal
+                  </Text>
+                  <FontAwesome
+                    name="circle"
+                    size={18}
+                    style={{ color: "red", marginLeft: 5 }}
+                  />
+                </View>
               </View>
             )}
             {productData.nutriscore_data.sugars_points > 2 && (
               <View style={styles.infoLine}>
                 <View style={styles.infoLineLeft}>
-                  <Text>Sucre</Text>
+                  <MaterialCommunityIcons
+                    name="spoon-sugar"
+                    size={24}
+                    color="grey"
+                  />
+                  <Text style={styles.textLeft}>Sucre</Text>
                 </View>
-                <Text>{productData.nutriments.sugars_100g}g</Text>
+                <View style={styles.infoRight}>
+                  <Text>{productData.nutriscore_data.sugars_value} g</Text>
+                  <FontAwesome
+                    name="circle"
+                    size={18}
+                    style={{ color: "red", marginLeft: 5 }}
+                  />
+                </View>
               </View>
             )}
             {productData.nutriscore_data.saturated_fat_points > 2 && (
               <View style={styles.infoLine}>
                 <View style={styles.infoLineLeft}>
-                  <Text>Graisses saturées</Text>
+                  <Ionicons name="water-sharp" size={24} color="grey" />
+                  <Text style={styles.textLeft}>Graisses saturées</Text>
                 </View>
-                <Text>{productData.nutriscore_data.saturated_fat}g</Text>
+                <View style={styles.infoRight}>
+                  <Text>
+                    {productData.nutriscore_data.saturated_fat_value} g
+                  </Text>
+                  <FontAwesome
+                    name="circle"
+                    size={18}
+                    style={{ color: "red", marginLeft: 5 }}
+                  />
+                </View>
               </View>
             )}
-            {productData.nutriscore_data.sodium_points > 2 && (
-              <View style={styles.infoLine}>
-                <View style={styles.infoLineLeft}>
-                  <Text>Sel</Text>
+            {productData.nutriscore_data.is_beverage ? (
+              <View></View>
+            ) : (
+              productData.nutriscore_data.sodium_points > 2 && (
+                <View style={styles.infoLine}>
+                  <View style={styles.infoLineLeft}>
+                    <MaterialCommunityIcons
+                      name="food-variant"
+                      size={24}
+                      color="grey"
+                    />
+                    <Text style={styles.textLeft}>Sel</Text>
+                  </View>
+                  <View style={styles.infoRight}>
+                    <Text>{productData.nutriments.salt_100g} g</Text>
+                    <FontAwesome
+                      name="circle"
+                      size={18}
+                      style={{ color: "red", marginLeft: 5 }}
+                    />
+                  </View>
                 </View>
-                <Text>{productData.nutriments.salt_100g}g</Text>
-              </View>
+              )
             )}
           </View>
         </View>
@@ -171,6 +306,15 @@ const styles = StyleSheet.create({
   infoLine: {
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  infoLineLeft: {
+    flexDirection: "row",
+  },
+  infoRight: {
+    flexDirection: "row",
+  },
+  textLeft: {
+    marginLeft: 10,
   },
   defaults: {
     marginTop: 15,
